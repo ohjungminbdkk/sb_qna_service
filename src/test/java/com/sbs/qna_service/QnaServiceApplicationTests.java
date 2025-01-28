@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,13 @@ class QnaServiceApplicationTests {
 	@Autowired // フィールド注入
 	private QuestionRepository questionRepository;
 
-	@Test
-	// @DisplayName : テストの意図を人が読みやすい形で説明
-	@DisplayName("データを保存する")
-	void t001() {
+	@BeforeEach // テストケースが実行する前に一回実行する
+	void beforeEach() {
+		// すべてのデータ削除
+		questionRepository.deleteAll();
+		// 痕跡削除　（次のINSERT際にIDが1に設定させるために）
+		questionRepository.clearAutoIncrement();
+
 		Question q1 = new Question();
 		q1.setSubject("質問１");
 		q1.setContent("質問１の内容内容内容内容内容内容内容内容内容");
@@ -36,6 +40,18 @@ class QnaServiceApplicationTests {
 		q2.setContent("IDは自動に生成されますか？");
 		q2.setCreateDate(LocalDateTime.now());
 		this.questionRepository.save(q2);
+	}
+
+	@Test
+	// @DisplayName : テストの意図を人が読みやすい形で説明
+	@DisplayName("データを保存する")
+	void t001() {
+		Question q = new Question();
+		q.setSubject("冬は寒いですか");
+		q.setContent("はい。さむいです。");
+		q.setCreateDate(LocalDateTime.now());
+		questionRepository.save(q); // 質問と質問内容を保存
+		assertEquals("冬は寒いですか", questionRepository.findById(3).get().getSubject());
 	}
 
 	/*
@@ -98,11 +114,7 @@ class QnaServiceApplicationTests {
 	}
 
 	/*
-	 UPDATE question
-	 SET content = ?,
-	 create_date = ?,
-	 subject = ?,
-	 where id = ?,
+	 * UPDATE question SET content = ?, create_date = ?, subject = ?, where id = ?,
 	 */
 	@Test
 	@DisplayName("データ修正する")
@@ -114,9 +126,9 @@ class QnaServiceApplicationTests {
 		q.setSubject("修正されたタイトル");
 		questionRepository.save(q);
 	}
-	
+
 	/*
-	 DELETE FROM question where id = ?,
+	 * DELETE FROM question where id = ?,
 	 */
 	@Test
 	@DisplayName("データ削除する")
@@ -130,6 +142,5 @@ class QnaServiceApplicationTests {
 		questionRepository.delete(q);
 		assertEquals(1, questionRepository.count());
 	}
-
 
 }
