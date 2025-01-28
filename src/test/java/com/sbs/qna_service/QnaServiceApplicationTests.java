@@ -114,5 +114,22 @@ class QnaServiceApplicationTests {
 		q.setSubject("修正されたタイトル");
 		questionRepository.save(q);
 	}
+	
+	/*
+	 DELETE FROM question where id = ?,
+	 */
+	@Test
+	@DisplayName("データ削除する")
+	void t008() {
+		// SQL SELECT COUNT(*) FROM question;
+		assertEquals(2, questionRepository.count());
+		// SQL SELECT * FROM question WHERE id=1;
+		Optional<Question> oq = this.questionRepository.findById(1);
+		assertTrue(oq.isPresent());
+		Question q = oq.get();
+		questionRepository.delete(q);
+		assertEquals(1, questionRepository.count());
+	}
+
 
 }
