@@ -1,6 +1,10 @@
 package com.sbs.qna_service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,5 +36,69 @@ class QnaServiceApplicationTests {
         q2.setCreateDate(LocalDateTime.now());
         this.questionRepository.save(q2); 
 	}
+	
+	/*
+	 SQL
+	 SELECT * FROM question; 
+	*/
+	@Test
+	@DisplayName("findAll")
+	void t002() {
+        List<Question> all = questionRepository.findAll();
+        // select * from table
+        assertEquals(2, all.size());
+
+        Question q = all.get(0);
+        assertEquals("質問１", q.getSubject());
+	}
+
+	/*
+	 SQL
+	 SELECT * FROM question WHERE id=1; 
+	*/
+	@Test
+	@DisplayName("findById")
+	void t003() {
+        Optional<Question> oq = questionRepository.findById(2);
+        if(oq.isPresent()) { //値の存在を確認　有り：TRUE　無し：FALSE
+            Question q = oq.get();
+            assertEquals("SpringBootの質問です。", q.getSubject());
+        }
+	}
+	
+	/*
+	 SQL
+	 SELECT * FROM question WHERE subject='質問１'; 
+	*/
+	@Test
+	@DisplayName("findBySubject")
+	void t004() {
+        Question q = this.questionRepository.findBySubject("質問１");
+        assertEquals(1, q.getId());
+	}
+	
+	/*
+	 SQL
+	 SELECT * FROM question WHERE subject='質問１' and content='質問１の内容内容内容内容内容内容内容内容内容'; 
+	*/
+	@Test
+	@DisplayName("findBySubjectAndContent")
+    void t005() {
+        Question q = this.questionRepository.findBySubjectAndContent(
+                "質問１", "質問１の内容内容内容内容内容内容内容内容内容");
+        assertEquals(1, q.getId());
+    }
+	
+	/*
+	 SQL
+	 SELECT * FROM question WHERE subject LIKE '質問１'; 
+	*/
+	@Test
+	@DisplayName("findBySubjectLike")
+   void t006() {
+        List<Question> qList = this.questionRepository.findBySubjectLike("質問%");
+        Question q = qList.get(0);
+        assertEquals("質問１", q.getSubject());
+    }
 
 }
