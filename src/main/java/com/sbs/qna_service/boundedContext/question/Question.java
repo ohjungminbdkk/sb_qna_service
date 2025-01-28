@@ -12,27 +12,26 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@Entity //SpringBootが該当クラスをENTITYに見る。
+@Data
+@Entity
 public class Question {
-    @Id //PKEY
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //AUTO_INCREMENT
-    private Integer id; //質問データの固有番号
+	@Id // PKEY
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
+	private Integer id; // 質問データの固有番号
 
-    @Column(length = 200) //VARCHAR(200)
-    private String subject;
+	@Column(length = 200) // VARCHAR(200)
+	private String subject;
 
-    @Column(columnDefinition = "TEXT")
-    private String content; //内容
+	@Column(columnDefinition = "TEXT")
+	private String content; // 内容
 
-    private LocalDateTime createDate;
-    
-    //CascadeType.REMOVE 質問が削除されたら、コメントも削除される。
-    //これは、DBテーブルにはカラムが生成されない。（DBはリストや配列ができない。）
-    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
-    private List<Answer> answerList;
+	private LocalDateTime createDate;
+
+	// CascadeType.REMOVE 質問が削除されたら、コメントも削除される。
+	// これは、DBテーブルにはカラムが生成されない。（DBはリストや配列ができない。）
+	@OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+	private List<Answer> answerList;
+	
 }
