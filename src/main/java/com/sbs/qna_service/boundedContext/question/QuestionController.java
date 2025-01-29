@@ -12,14 +12,14 @@ import lombok.RequiredArgsConstructor;
 @Controller
 public class QuestionController {
 	
-	private final QuestionRepository questionRepository;
+	private final QuestionService questionService;
 	
 	@GetMapping("/question/list")
 	// @ResponseBody 使わない理由、リターンされる”文字列”が表示される。
 	public String list(Model model) {
 	//return "requstion_list"; //Html名を指定。
 		
-        List<Question> questionList = questionRepository.findAll();
+        List<Question> questionList = questionService.findAll();
         model.addAttribute("questionList", questionList);
         return "question_list";
 	}
