@@ -2,6 +2,8 @@ package com.sbs.qna_service.boundedContext.question;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
@@ -24,4 +26,17 @@ public class QuestionController {
         return "question_list";
 	}
 	
+    @GetMapping(value = "/question/detail/{id}")
+    public String detail(Model model, @PathVariable("id") Integer id) {
+        Question question = questionService.getQuestion(id);
+        model.addAttribute("question", question);
+        return "question_detail";
+    }
+    
+	/*
+	 * 또 다른 방식
+	 * @GetMapping(value = "/question/detail") public String detail(Model
+	 * model, @PathVariable("id") Integer id, @RequestParam int id) { return
+	 * "question_detail"; }
+	 */
 }
