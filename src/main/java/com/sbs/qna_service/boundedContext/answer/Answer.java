@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @Entity // SpringBootが該当クラスをENTITYに見る。
@@ -25,5 +26,6 @@ public class Answer {
 	private LocalDateTime createDate;
 
 	@ManyToOne
+	@ToString.Exclude // ToString 대상에서 제외
 	private Question question;
 }
