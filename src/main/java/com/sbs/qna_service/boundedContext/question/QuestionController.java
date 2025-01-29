@@ -3,6 +3,7 @@ package com.sbs.qna_service.boundedContext.question;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
@@ -10,13 +11,14 @@ import java.util.List;
 import org.springframework.ui.Model;
 import lombok.RequiredArgsConstructor;
 
+@RequestMapping("/question")
 @RequiredArgsConstructor // 요청이 들어올 때만 객체를 생성한다.
 @Controller
 public class QuestionController {
 	
 	private final QuestionService questionService;
 	
-	@GetMapping("/question/list")
+	@GetMapping("/list")
 	// @ResponseBody 使わない理由、リターンされる”文字列”が表示される。
 	public String list(Model model) {
 	//return "requstion_list"; //Html名を指定。
@@ -26,7 +28,7 @@ public class QuestionController {
         return "question_list";
 	}
 	
-    @GetMapping(value = "/question/detail/{id}")
+    @GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable("id") Integer id) {
         Question question = questionService.getQuestion(id);
         model.addAttribute("question", question);
