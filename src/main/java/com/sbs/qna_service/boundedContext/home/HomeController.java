@@ -11,5 +11,9 @@ public class HomeController {
 	public String showHome() {
 		return "hello";
 	}
-
+	
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/question/list"; // 서버는 http 302 응답 반환
+    }
 }
