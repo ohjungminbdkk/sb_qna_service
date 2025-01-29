@@ -10,22 +10,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@Entity //SpringBootが該当クラスをENTITYに見る。
+@Data
+@Entity // SpringBootが該当クラスをENTITYに見る。
 public class Answer {
-    @Id //PKEY
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //AUTO_INCREMENT
-    private Integer id; //質問データの固有番号
+	@Id // PKEY
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
+	private Integer id; // 質問データの固有番号
 
-    @Column(columnDefinition = "TEXT")
-    private String content; //内容
+	@Column(columnDefinition = "TEXT")
+	private String content; // 内容
 
-    private LocalDateTime createDate;
-    
-    @ManyToOne
-    private Question question;
+	private LocalDateTime createDate;
+
+	@ManyToOne
+	private Question question;
 }

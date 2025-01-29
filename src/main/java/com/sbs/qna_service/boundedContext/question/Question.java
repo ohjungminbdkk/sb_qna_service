@@ -1,6 +1,7 @@
 package com.sbs.qna_service.boundedContext.question;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sbs.qna_service.boundedContext.answer.Answer;
@@ -32,6 +33,11 @@ public class Question {
 	// CascadeType.REMOVE 質問が削除されたら、コメントも削除される。
 	// これは、DBテーブルにはカラムが生成されない。（DBはリストや配列ができない。）
 	@OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
-	private List<Answer> answerList;
-	
+	private List<Answer> answerList = new ArrayList<>();
+
+	//外部にてanswerListファイルに接近することを遮断
+	public void addAnswer(Answer a) {
+		a.setQuestion(this);
+		answerList.add(a);
+	}
 }
