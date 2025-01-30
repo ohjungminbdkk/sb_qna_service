@@ -1,5 +1,6 @@
 package com.sbs.qna_service.boundedContext.question;
 
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -7,9 +8,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+
 import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/question")
@@ -44,16 +50,20 @@ public class QuestionController {
 	 */
     
     @GetMapping(value = "/create")
-    public String create() {
+    public String questionCreate(QuestionForm questionForm) {
         return "question_form";
     }
     
     @PostMapping(value = "/create")
-    public String questionCreate(QuesionForm questionForm){
-    	String subject= questionForm.getSubject();
-    	String content= questionForm.getContent();
-    	
-    	questionService.create(subject, content);
+    //Valid QuestionForm
+    //questionForm값을 바인딩 할 때 유효성 체크를 해라
+    public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult){
+    	if(bindingResult.hasErrors()) {
+    		//question_form.html 실행
+    		//다시 작성하라는 의미로 응답에 폼을 실어서 보냄
+    		return "question_form";
+    	}
+    	questionService.create(questionForm.getSubject(), questionForm.getContent());
     	return "redirect:/question/list";
     }
 }
