@@ -3,6 +3,7 @@ package com.sbs.qna_service.boundedContext.question;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -42,5 +43,14 @@ public class QuestionController {
 	 * "question_detail"; }
 	 */
     
+    @GetMapping(value = "/create")
+    public String create() {
+        return "question_form";
+    }
     
+    @PostMapping(value = "/create")
+    public String questionCreate(@RequestParam(value="subject") String subject, @RequestParam(value="content") String content){
+    	questionService.create(subject, content);
+    	return "redirect:/question/list";
+    }
 }
