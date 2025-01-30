@@ -41,4 +41,6 @@ public class QuestionController {
 	 * model, @PathVariable("id") Integer id, @RequestParam int id) { return
 	 * "question_detail"; }
 	 */
+    
+    
 }
