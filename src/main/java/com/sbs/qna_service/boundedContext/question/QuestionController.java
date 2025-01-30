@@ -3,6 +3,7 @@ package com.sbs.qna_service.boundedContext.question;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,9 +51,15 @@ public class QuestionController {
 	 */
     
     @GetMapping(value = "/create")
-    public String questionCreate(QuestionForm questionForm) {
+    public String questionCreate(@ModelAttribute QuestionForm questionForm) {//@ModelAttribute 명시안해도 됨.
         return "question_form";
     }
+    
+	/*
+	 * 아래는 폼을 수동관리하기 용이함.
+	 * @GetMapping(value = "/create") public String questionCreate(Model model) {
+	 * model.addAttribute("question", new QuestionForm()); return "question_form"; }
+	 */
     
     @PostMapping(value = "/create")
     //Valid QuestionForm
