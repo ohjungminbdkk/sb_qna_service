@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +19,7 @@ import com.sbs.qna_service.boundedContext.answer.Answer;
 import com.sbs.qna_service.boundedContext.answer.AnswerRepository;
 import com.sbs.qna_service.boundedContext.question.Question;
 import com.sbs.qna_service.boundedContext.question.QuestionRepository;
+import com.sbs.qna_service.boundedContext.question.QuestionService;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
@@ -25,6 +27,9 @@ import jakarta.transaction.Transactional;
 
 @SpringBootTest
 class QnaServiceApplicationTests {
+
+	@Autowired
+	private QuestionService questionService;
 
 	@Autowired // フィールド注入
 	private QuestionRepository questionRepository;
@@ -215,9 +220,8 @@ class QnaServiceApplicationTests {
 	}
 
 	/*
-	 * EAGERの場合。以下のJOINを実行される
-	 * SELECT Q.*, A.* FROM answer AS Q LEFT JOIN answer AS A on Q.id =
-	 * A.question_id WHERE Q.id=?;
+	 * EAGERの場合。以下のJOINを実行される SELECT Q.*, A.* FROM answer AS Q LEFT JOIN answer AS A
+	 * on Q.id = A.question_id WHERE Q.id=?;
 	 * 
 	 **/
 	// テストコードにてはTransactionalを使用しなければならない。
@@ -242,6 +246,13 @@ class QnaServiceApplicationTests {
 
 		assertEquals(1, answerList.size());
 		assertEquals("生成されて保管されます。", answerList.get(0).getContent());
+	}
+
+	@Test
+	@DisplayName("대량의 테스트 데이터 만들기")
+	void t012() {
+		IntStream.rangeClosed(3, 300)
+				.forEach(no -> questionService.create("테스트 제목입니다. %d".formatted(no), "테스트 내용입니다. %d".formatted(no)));
 	}
 
 }
