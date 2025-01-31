@@ -23,6 +23,7 @@ public class SecurityConfig {
 				.requestMatchers(new AntPathRequestMatcher("/question/detail/**")).permitAll()
 				.requestMatchers(new AntPathRequestMatcher("/user/signup")).permitAll()
 				.requestMatchers(new AntPathRequestMatcher("/user/login")).permitAll()
+				.requestMatchers(new AntPathRequestMatcher("/style.css")).permitAll()
 				.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
 				// 그 외의 요청은 인증이 필요
 				.anyRequest().authenticated())
@@ -45,7 +46,8 @@ public class SecurityConfig {
 				.logout((logout) -> logout
 						.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
 				// 로그인 성공시 리다이렉트 경로
-				.logoutSuccessUrl("/").invalidateHttpSession(true));
+				.logoutSuccessUrl("/")
+				.invalidateHttpSession(true)); // 세션을 무효화(세션상에 올라간 인증을 지우기위해)
 		return http.build();
 	}
 

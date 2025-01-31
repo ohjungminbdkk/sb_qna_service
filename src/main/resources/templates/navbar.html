@@ -8,8 +8,22 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 			<li class="nav-item">
+				<!-- sec:authorize="isAnonymous()" : 로그인이 되지 않았을 때 상태-->
 				<a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/user/login}">로그인</a>
-				<a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/user/logout}">로그아웃</a>
+				<!-- sec:authorize="isAuthenticated()" : 로그인이 된 때 상태 -->
+				<!-- <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/user/logout}">로그아웃</a> -->
+				
+
+				<!-- href="javascript:;" : 로그인처리를 자바스크립트에게 맡기겠다. -->
+				<!-- onclick="this.nextElementSibling.submit();" : 이쪽의 형제 즉 밑에 있는 폼에게 제출해라 -->
+				<a class="nav-link"
+				 sec:authorize="isAuthenticated()"
+				  href="javascript:;"
+				  onclick="this.nextElementSibling.submit();">로그아웃</a>
+				  
+				  
+				<!-- 로그아웃 요청에 대하여 POST로 처리할 수 있다. -->
+				<form method="POST" sec:authorize="isAuthenticated()" th:action="@{/user/logout}" hidden></form>
 			</li>
 			<li class="nav-item">
 			    <a class="nav-link" th:href="@{/user/signup}">회원가입</a>
