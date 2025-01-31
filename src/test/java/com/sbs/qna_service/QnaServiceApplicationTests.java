@@ -17,9 +17,11 @@ import org.springframework.test.annotation.Rollback;
 
 import com.sbs.qna_service.boundedContext.answer.Answer;
 import com.sbs.qna_service.boundedContext.answer.AnswerRepository;
+import com.sbs.qna_service.boundedContext.answer.AnswerService;
 import com.sbs.qna_service.boundedContext.question.Question;
 import com.sbs.qna_service.boundedContext.question.QuestionRepository;
 import com.sbs.qna_service.boundedContext.question.QuestionService;
+import com.sbs.qna_service.boundedContext.user.SiteUser;
 import com.sbs.qna_service.boundedContext.user.UserRepository;
 import com.sbs.qna_service.boundedContext.user.UserService;
 
@@ -44,6 +46,10 @@ class QnaServiceApplicationTests {
 
 	@Autowired
 	private AnswerRepository answerRepository;
+	
+	@Autowired
+	private AnswerService answerService;
+
 
 	@BeforeEach // テストケースが実行する前に一回実行する
 	void beforeEach() {
@@ -62,30 +68,22 @@ class QnaServiceApplicationTests {
 		userRepository.clearAutoIncrement();
 		
 		//회원 2명 생성
-		userService.create("user1", "user1@test.com", "1234");
-		userService.create("user2", "user2@test.com", "1234");
+		SiteUser user1 = userService.create("user1", "user1@test.com", "1234");
+		SiteUser user2 = userService.create("user2", "user2@test.com", "1234");
 		
-		// 質問生成
-		Question q1 = new Question();
-		q1.setSubject("質問１");
-		q1.setContent("質問１の内容内容内容内容内容内容内容内容内容");
-		q1.setCreateDate(LocalDateTime.now());
-		questionRepository.save(q1); // 質問と質問内容を保存
-
-		Question q2 = new Question();
-		q2.setSubject("SpringBootの質問です。");
-		q2.setContent("IDは自動に生成されますか？");
-		q2.setCreateDate(LocalDateTime.now());
+		// 질문 생성
+		Question q1 = questionService.create("질문이 머에요", "질문에 대해서 알고 싶습니다.", user1);
+		questionRepository.save(q1); // 질문과 질문내용 보관
+		
+		Question q2 = questionService.create("스프링부트 모델 질문입니다.", "id는 자동 생성되나요", user2);
+		questionRepository.save(q1); // 질문과 질문내용 보관
 		questionRepository.save(q2);
 
 		// コメント生成
-		Answer a1 = new Answer();
-		a1.setContent("生成されて保管されます。");
-		a1.setQuestion(q2);
+		Answer a1 = answerService.create(q2,"생성되어 보관합니다.", user1);
+
 		q2.addAnswer(a1);
 //		q2.getAnswerList().add(a1);
-
-		a1.setCreateDate(LocalDateTime.now());
 		answerRepository.save(a1);
 	}
 
@@ -93,12 +91,10 @@ class QnaServiceApplicationTests {
 	// @DisplayName : テストの意図を人が読みやすい形で説明
 	@DisplayName("データを保存する")
 	void t001() {
-		Question q = new Question();
-		q.setSubject("冬は寒いですか");
-		q.setContent("はい。さむいです。");
-		q.setCreateDate(LocalDateTime.now());
-		questionRepository.save(q); // 質問と質問内容を保存
-		assertEquals("冬は寒いですか", questionRepository.findById(3).get().getSubject());
+		SiteUser user1 = userService.getUser("user1");
+		
+		Question q = questionService.create("겨울은 춥습니다.", "맞아요. 춥습니다.", user1);
+		assertEquals("겨울은 춥습니다.", questionRepository.findById(3).get().getSubject());
 	}
 
 	/*
@@ -112,7 +108,7 @@ class QnaServiceApplicationTests {
 		assertEquals(2, all.size());
 
 		Question q = all.get(0);
-		assertEquals("質問１", q.getSubject());
+		assertEquals("질문이 머에요", q.getSubject());
 	}
 
 	/*
@@ -124,7 +120,7 @@ class QnaServiceApplicationTests {
 		Optional<Question> oq = questionRepository.findById(2);
 		if (oq.isPresent()) { // 値の存在を確認 有り：TRUE 無し：FALSE
 			Question q = oq.get();
-			assertEquals("SpringBootの質問です。", q.getSubject());
+			assertEquals("스프링부트 모델 질문입니다.", q.getSubject());
 		}
 	}
 
@@ -134,7 +130,7 @@ class QnaServiceApplicationTests {
 	@Test
 	@DisplayName("findBySubject")
 	void t004() {
-		Question q = questionRepository.findBySubject("質問１");
+		Question q = questionRepository.findBySubject("질문이 머에요");
 		assertEquals(1, q.getId());
 	}
 
@@ -145,7 +141,7 @@ class QnaServiceApplicationTests {
 	@Test
 	@DisplayName("findBySubjectAndContent")
 	void t005() {
-		Question q = questionRepository.findBySubjectAndContent("質問１", "質問１の内容内容内容内容内容内容内容内容内容");
+		Question q = questionRepository.findBySubjectAndContent("질문이 머에요", "질문에 대해서 알고 싶습니다.");
 		assertEquals(1, q.getId());
 	}
 
@@ -155,9 +151,9 @@ class QnaServiceApplicationTests {
 	@Test
 	@DisplayName("findBySubjectLike")
 	void t006() {
-		List<Question> qList = questionRepository.findBySubjectLike("質問%");
+		List<Question> qList = questionRepository.findBySubjectLike("질문%");
 		Question q = qList.get(0);
-		assertEquals("質問１", q.getSubject());
+		assertEquals("질문이 머에요", q.getSubject());
 	}
 
 	/*
@@ -197,8 +193,10 @@ class QnaServiceApplicationTests {
 	 * question_id= ? ;
 	 * 
 	 */
+	@Transactional
 	@Test
 	@DisplayName("コメント生成後、保管")
+	@Rollback(false) // テストメソッドが終わった後にも、TransactionがRollbackしなくて、Commitされる。
 	void t009() {
 		Optional<Question> oq = questionRepository.findById(2);
 		assertTrue(oq.isPresent());
@@ -213,11 +211,15 @@ class QnaServiceApplicationTests {
 		 * v2 Question q = questionRepository.findById(2).orElse(null));
 		 */
 
-		Answer a = new Answer();
-		a.setContent("生成されて保管されます。");
-		a.setQuestion(q); // 度の質問に対するコメント化知るために
-		a.setCreateDate(LocalDateTime.now());
-		answerRepository.save(a);
+		/*
+		 * Answer a = new Answer(); a.setContent("生成されて保管されます。"); a.setQuestion(q); //
+		 * 度の質問に対するコメント化知るために a.setCreateDate(LocalDateTime.now());
+		 * answerRepository.save(a);
+		 */
+
+		SiteUser user2 = userService.getUser("user2");
+		Answer a = answerService.create(q,"생성되어 보관됩니다.", user2);
+		assertEquals("생성되어 보관됩니다.", a.getContent());
 	}
 
 	/*
@@ -260,15 +262,16 @@ class QnaServiceApplicationTests {
 		// 下SQL : SELECT * FROM answer WHERE question_id = 2;を実行する。
 		List<Answer> answerList = q.getAnswerList();// DB接続が切れたので、answer取得失敗
 
-		assertEquals(1, answerList.size());
-		assertEquals("生成されて保管されます。", answerList.get(0).getContent());
+		assertEquals(2, answerList.size());
+		assertEquals("생성되어 보관합니다.", answerList.get(0).getContent());
 	}
 
 	@Test
 	@DisplayName("대량의 테스트 데이터 만들기")
 	void t012() {
+		SiteUser user2 = userService.getUser("user2");
 		IntStream.rangeClosed(3, 300)
-				.forEach(no -> questionService.create("테스트 제목입니다. %d".formatted(no), "테스트 내용입니다. %d".formatted(no)));
+				.forEach(no -> questionService.create("테스트 제목입니다. %d".formatted(no), "테스트 내용입니다. %d".formatted(no), user2));
 	}
 
 }

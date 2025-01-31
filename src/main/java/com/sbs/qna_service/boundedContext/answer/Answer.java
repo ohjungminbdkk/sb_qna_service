@@ -3,6 +3,7 @@ package com.sbs.qna_service.boundedContext.answer;
 import java.time.LocalDateTime;
 
 import com.sbs.qna_service.boundedContext.question.Question;
+import com.sbs.qna_service.boundedContext.user.SiteUser;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,4 +29,7 @@ public class Answer {
 	@ManyToOne
 	@ToString.Exclude // ToString 대상에서 제외
 	private Question question;
+
+	@ManyToOne
+	private SiteUser author;
 }

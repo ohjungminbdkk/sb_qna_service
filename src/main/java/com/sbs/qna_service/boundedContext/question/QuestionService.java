@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.sbs.qna_service.boundedContext.DataNotFoundException;
 import com.sbs.qna_service.boundedContext.answer.Answer;
+import com.sbs.qna_service.boundedContext.user.SiteUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,12 +36,15 @@ public class QuestionService {
 		}
 	}
 
-	public void create(String subject, String content) {
+	public Question create(String subject, String content, SiteUser author) {
 		Question question = new Question();
 		question.setSubject(subject);
 		question.setContent(content);
+		question.setAuthor(author);
 		question.setCreateDate(LocalDateTime.now());
 		questionRepository.save(question);
+		
+		return question;
 	}
 
 	public Page<Question> getList(int page) {

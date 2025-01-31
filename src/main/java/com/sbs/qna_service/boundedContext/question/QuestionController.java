@@ -2,6 +2,7 @@ package com.sbs.qna_service.boundedContext.question;
 
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sbs.qna_service.boundedContext.answer.AnswerForm;
+import com.sbs.qna_service.boundedContext.user.SiteUser;
+import com.sbs.qna_service.boundedContext.user.UserService;
 
 import jakarta.validation.Valid;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.ui.Model;
@@ -28,6 +32,8 @@ import lombok.RequiredArgsConstructor;
 public class QuestionController {
 
 	private final QuestionService questionService;
+
+	private final UserService userService;
 
 	@GetMapping("/list")
 	// @ResponseBody 使わない理由、リターンされる”文字列”が表示される。
@@ -58,7 +64,7 @@ public class QuestionController {
 	 * model, @PathVariable("id") Integer id, @RequestParam int id) { return
 	 * "question_detail"; }
 	 */
-
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping(value = "/create")
 	public String questionCreate(@ModelAttribute QuestionForm questionForm) {// @ModelAttribute 명시안해도 됨.
 		return "question_form";
@@ -70,17 +76,19 @@ public class QuestionController {
 	 * @GetMapping(value = "/create") public String questionCreate(Model model) {
 	 * model.addAttribute("question", new QuestionForm()); return "question_form"; }
 	 */
-
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping(value = "/create")
 	// Valid QuestionForm
 	// questionForm값을 바인딩 할 때 유효성 체크를 해라
-	public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult) {
+	public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
 		if (bindingResult.hasErrors()) {
 			// question_form.html 실행
 			// 다시 작성하라는 의미로 응답에 폼을 실어서 보냄
 			return "question_form";
 		}
-		questionService.create(questionForm.getSubject(), questionForm.getContent());
+		// principal.getName() : 글 작성자를 가져온다.
+		SiteUser siteUser = userService.getUser(principal.getName());
+		questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
 		return "redirect:/question/list";
 	}
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sbs.qna_service.boundedContext.answer.Answer;
+import com.sbs.qna_service.boundedContext.user.SiteUser;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 
@@ -29,6 +31,9 @@ public class Question {
 	private String content; // 内容
 
 	private LocalDateTime createDate;
+	
+    @ManyToOne
+    private SiteUser author;
 
 	// CascadeType.REMOVE 質問が削除されたら、コメントも削除される。
 	// これは、DBテーブルにはカラムが生成されない。（DBはリストや配列ができない。）
