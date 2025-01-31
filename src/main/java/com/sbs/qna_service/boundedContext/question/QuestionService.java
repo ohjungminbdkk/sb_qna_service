@@ -3,6 +3,10 @@ package com.sbs.qna_service.boundedContext.question;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.sbs.qna_service.boundedContext.DataNotFoundException;
@@ -35,5 +39,10 @@ public class QuestionService {
 		question.setContent(content);
 		question.setCreateDate(LocalDateTime.now());
 		questionRepository.save(question);
+	}
+
+	public Page<Question> getList(int page) {
+		Pageable pageable = PageRequest.of(page, 10);
+		return questionRepository.findAll(pageable);
 	}
 }
