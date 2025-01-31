@@ -20,6 +20,8 @@ import com.sbs.qna_service.boundedContext.answer.AnswerRepository;
 import com.sbs.qna_service.boundedContext.question.Question;
 import com.sbs.qna_service.boundedContext.question.QuestionRepository;
 import com.sbs.qna_service.boundedContext.question.QuestionService;
+import com.sbs.qna_service.boundedContext.user.UserRepository;
+import com.sbs.qna_service.boundedContext.user.UserService;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
@@ -28,6 +30,12 @@ import jakarta.transaction.Transactional;
 @SpringBootTest
 class QnaServiceApplicationTests {
 
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
 	@Autowired
 	private QuestionService questionService;
 
@@ -48,7 +56,15 @@ class QnaServiceApplicationTests {
 		answerRepository.deleteAll();
 		// 痕跡削除 （次のINSERT際にIDが1に設定させるために）
 		answerRepository.clearAutoIncrement();
-
+		
+		userRepository.deleteAll();
+		
+		userRepository.clearAutoIncrement();
+		
+		//회원 2명 생성
+		userService.create("user1", "user1@test.com", "1234");
+		userService.create("user2", "user2@test.com", "1234");
+		
 		// 質問生成
 		Question q1 = new Question();
 		q1.setSubject("質問１");
