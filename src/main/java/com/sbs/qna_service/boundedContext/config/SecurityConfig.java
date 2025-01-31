@@ -18,11 +18,34 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-				.requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
-
-		http.formLogin((formLogin) -> formLogin.loginPage("/user/login").defaultSuccessUrl("/"))// 로그인 폼으로 이동
-				.logout((logout) -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))// 로그인 처리시 요청 경로
-						.logoutSuccessUrl("/").invalidateHttpSession(true));// 로그인 성공시 리다이렉트 경로
+				//.requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
+				.requestMatchers(new AntPathRequestMatcher("/question/list")).permitAll()
+				.requestMatchers(new AntPathRequestMatcher("/question/detail/**")).permitAll()
+				.requestMatchers(new AntPathRequestMatcher("/user/signup")).permitAll()
+				.requestMatchers(new AntPathRequestMatcher("/user/login")).permitAll()
+				.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
+				// 그 외의 요청은 인증이 필요
+				.anyRequest().authenticated())
+				// 로그인 폼으로 이동
+				.formLogin((formLogin) -> formLogin
+						/**
+						 * 템플릿에서 name="username", name="password"를 커스텀 마이징에 쓸때 아래를 사용한다. 
+						 .usernameParameter("name") 
+						 .passwordParameter("pass")
+						 */
+						
+						// GET
+						// 시큐리티에게 우리가 만든 로그인 페이지 url을 알려준다.
+						// 만약에 하지 않으면 기본 로그인 페이지 url은 /login 이다.
+						.loginPage("/user/login")
+						// 로그인 처리시 요청 경로
+						// POST
+						// 시큐리티에게 로그인 폼 처리 url을 알려준다.
+						.defaultSuccessUrl("/"))
+				.logout((logout) -> logout
+						.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
+				// 로그인 성공시 리다이렉트 경로
+				.logoutSuccessUrl("/").invalidateHttpSession(true));
 		return http.build();
 	}
 
