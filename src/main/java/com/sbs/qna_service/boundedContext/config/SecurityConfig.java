@@ -44,7 +44,7 @@ public class SecurityConfig {
 						// 시큐리티에게 로그인 폼 처리 url을 알려준다.
 						.defaultSuccessUrl("/"))
 				.logout((logout) -> logout
-						.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
+						.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout", "POST"))
 				// 로그인 성공시 리다이렉트 경로
 				.logoutSuccessUrl("/")
 				.invalidateHttpSession(true)); // 세션을 무효화(세션상에 올라간 인증을 지우기위해)
