@@ -46,7 +46,18 @@ public class QuestionService {
 		
 		return question;
 	}
-
+	
+    public void modify(Question question, String subject, String content) {
+        question.setSubject(subject);
+        question.setContent(content);
+        question.setModifyDate(LocalDateTime.now());
+        this.questionRepository.save(question);
+    }
+	
+    public void delete(Question question) {
+        this.questionRepository.delete(question);
+    }
+    
 	public Page<Question> getList(int page) {
 		List<Sort.Order> sorts = new ArrayList<>();
 		sorts.add(Sort.Order.desc("createDate"));// 작성일자 순으로 정렬

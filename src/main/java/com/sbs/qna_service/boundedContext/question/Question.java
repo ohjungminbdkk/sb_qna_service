@@ -32,7 +32,11 @@ public class Question {
 
 	private LocalDateTime createDate;
 	
-    @ManyToOne
+    private LocalDateTime modifyDate;
+	
+    @ManyToOne // 아래 모델에서 외래키만 저장이됨.
+    // FetchType.EAGER로 설정하면 author 필드에 저장된 userId뿐만 아니라 전체 사용자 정보도 함께 가져옴.
+    // 그러나 모든 관계를 EAGER로 설정하면 성능 저하 가능성이 있음, 따라서 필요할 때만 사용해야 함.
     private SiteUser author;
 
 	// CascadeType.REMOVE 質問が削除されたら、コメントも削除される。

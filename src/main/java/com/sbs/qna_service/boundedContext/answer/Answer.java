@@ -26,6 +26,8 @@ public class Answer {
 
 	private LocalDateTime createDate;
 
+	private LocalDateTime modifyDate;
+	
 	@ManyToOne
 	@ToString.Exclude // ToString 대상에서 제외
 	private Question question;
