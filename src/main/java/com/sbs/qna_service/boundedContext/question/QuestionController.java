@@ -39,7 +39,8 @@ public class QuestionController {
 
 	@GetMapping("/list")
 	// @ResponseBody 使わない理由、リターンされる”文字列”が表示される。
-	public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+	public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "kw", defaultValue = "") String kw) {
 		// return "requstion_list"; //Html名を指定。
 		/*
 		 * 연습 List<Question> questionList = questionService.findAll();
@@ -47,8 +48,9 @@ public class QuestionController {
 		 */
 
 		// 페이지용 코드 작성
-		Page<Question> paging = questionService.getList(page);
+		Page<Question> paging = questionService.getList(page, kw);
 		model.addAttribute("paging", paging);
+        model.addAttribute("kw", kw);
 		return "question_list";
 	}
 
